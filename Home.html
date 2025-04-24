@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divy Singhvi | Terminal</title>
+    <style>
+        :root {
+            --background: #1e1e1e;
+            --terminal-bg: #2d2d2d;
+            --text-color: #f8f8f8;
+            --prompt-color: #57c754;
+            --accent-color: #57c754;
+            --path-color: #57c7c4;
+            --link-color: #57c754;
+            --link-hover: #7de87a;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--text-color);
+            padding: 2rem;
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+        
+        .terminal {
+            background-color: var(--terminal-bg);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            width: 100%;
+        }
+        
+        .terminal-header {
+            background: linear-gradient(to bottom, #e4e4e4, #c8c8c8);
+            height: 28px;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            position: relative;
+        }
+        
+        .terminal-buttons {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .terminal-button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .close-button {
+            background-color: #ff5f56;
+            border: 1px solid #e0443e;
+        }
+        
+        .minimize-button {
+            background-color: #ffbd2e;
+            border: 1px solid #dea123;
+        }
+        
+        .maximize-button {
+            background-color: #27c93f;
+            border: 1px solid #1aab29;
+        }
+        
+        .terminal-title {
+            position: absolute;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 13px;
+            color: #4d4d4d;
+            pointer-events: none;
+        }
+        
+        .terminal-body {
+            padding: 12px;
+            font-size: 14px;
+            height: 500px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        
+        .prompt {
+            color: var(--prompt-color);
+            margin-right: 5px;
+            white-space: nowrap;
+        }
+        
+        .path {
+            color: var(--path-color);
+            margin-right: 5px;
+            white-space: nowrap;
+        }
+        
+        .output-line {
+            margin-bottom: 10px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+        
+        .link {
+            color: var(--link-color);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--link-color);
+            transition: color 0.3s ease;
+        }
+        
+        .link:hover {
+            color: var(--link-hover);
+        }
+        
+        #terminal-input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-color);
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            width: calc(100% - 40px);
+            caret-color: var(--text-color);
+        }
+        
+        .input-line {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        
+        .ascii-art {
+            color: var(--prompt-color);
+            line-height: 1.2;
+            margin-bottom: 15px;
+        }
+        
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 5px;
+        }
+        
+        .tag {
+            background-color: rgba(87, 199, 84, 0.2);
+            color: var(--accent-color);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        .project {
+            margin-bottom: 15px;
+            border-left: 2px solid var(--accent-color);
+            padding-left: 10px;
+        }
+        
+        .help-command {
+            margin-bottom: 5px;
+        }
+        
+        .command-description {
+            color: #a0a0a0;
+            padding-left: 20px;
+            margin-bottom: 8px;
+        }
+        
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 600px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .terminal-body {
+                font-size: 12px;
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="terminal">
+            <div class="terminal-header">
+                <div class="terminal-buttons">
+                    <div class="terminal-button close-button"></div>
+                    <div class="terminal-button minimize-button"></div>
+                    <div class="terminal-button maximize-button"></div>
+                </div>
+                <div class="terminal-title">divy@macbook: ~/portfolio</div>
+            </div>
+            <div class="terminal-body" id="terminal-body">
+                <!-- Terminal content will be added by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const terminalBody = document.getElementById('terminal-body');
+            
+            // Command history functionality
+            let commandHistory = [];
+            let historyIndex = -1;
+            
+            // ASCII Art for the banner
+            const asciiArt = `
+ _____   _                   _____  _             _            _ 
+|  __ \\ (_)                 / ____|(_)           | |          (_)
+| |  | | _  __   __ _   _  | (___   _  _ __    __| | __   __  _ 
+| |  | || | \\ \\ / /| | | |  \\___ \\ | || '_ \\  / _\` | \\ \\ / / | |
+| |__| || |  \\ V / | |_| |  ____) || || | | || (_| |  \\ V /  | |
+|_____/ |_|   \\_/   \\__, | |_____/ |_||_| |_| \\__,_|   \\_/   |_|
+                     __/ |                                       
+                    |___/                                        
+`;
+            
+            // Available commands
+            const commands = {
+                help: function() {
+                    return `Available commands:
+<span class="help-command">help</span>
+<span class="command-description">Show this help message</span>
+<span class="help-command">about</span>
+<span class="command-description">Learn about Divy</span>
+<span class="help-command">projects</span>
+<span class="command-description">View my portfolio projects</span>
+<span class="help-command">skills</span>
+<span class="command-description">List my technical skills</span>
+<span class="help-command">contact</span>
+<span class="command-description">Get my contact information</span>
+<span class="help-command">social</span>
+<span class="command-description">Show my social media links</span>
+<span class="help-command">git</span>
+<span class="command-description">View my GitHub profile</span>
+<span class="help-command">resume</span>
+<span class="command-description">Download my resume</span>
+<span class="help-command">clear</span>
+<span class="command-description">Clear the terminal</span>
+<span class="help-command">banner</span>
+<span class="command-description">Display the welcome banner</span>`;
+                },
+                
+                about: function() {
+                    return `I'm Divy Singhvi, a passionate developer with a keen interest in creating innovative web solutions and applications.
+
+I specialize in modern web technologies and full-stack development, focusing on building clean, efficient, and user-friendly digital experiences.
+
+Currently, I'm exploring new frameworks and tools to expand my skillset and tackle more complex development challenges.`;
+                },
+                
+                projects: function() {
+                    return `<div class="project">
+<strong>Personal Portfolio Site</strong>
+An interactive terminal-themed portfolio website showcasing my work and skills.
+<div class="tags">
+    <span class="tag">HTML5</span>
+    <span class="tag">CSS3</span>
+    <span class="tag">JavaScript</span>
+</div>
+</div>
+
+<div class="project">
+<strong>Task Management Application</strong>
+A collaborative project management tool with real-time updates and team features.
+<div class="tags">
+    <span class="tag">React</span>
+    <span class="tag">Node.js</span>
+    <span class="tag">MongoDB</span>
+</div>
+</div>
+
+<div class="project">
+<strong>Weather Dashboard</strong>
+Interactive weather forecasting app with location-based services and visual data representation.
+<div class="tags">
+    <span class="tag">JavaScript</span>
+    <span class="tag">Weather API</span>
+    <span class="tag">Chart.js</span>
+</div>
+</div>`;
+                },
+                
+                skills: function() {
+                    return `<strong>Technical Skills:</strong>
+<div class="tags">
+    <span class="tag">JavaScript</span>
+    <span class="tag">HTML5</span>
+    <span class="tag">CSS3</span>
+    <span class="tag">React</span>
+    <span class="tag">Node.js</span>
+    <span class="tag">Express</span>
+    <span class="tag">MongoDB</span>
+    <span class="tag">SQL</span>
+    <span class="tag">Git</span>
+    <span class="tag">RESTful APIs</span>
+    <span class="tag">Responsive Design</span>
+    <span class="tag">UI/UX Design</span>
+</div>`;
+                },
+                
+                contact: function() {
+                    return `Email: <a href="mailto:hello@divysinghvi.com" class="link">hello@divysinghvi.com</a>
+Phone: (555) 123-4567
+
+Feel free to reach out for collaboration opportunities or just to say hello!`;
+                },
+                
+                social: function() {
+                    return `GitHub: <a href="https://github.com/divysinghvi" target="_blank" class="link">github.com/divysinghvi</a>
+Twitter: <a href="https://twitter.com/divysinghvi" target="_blank" class="link">twitter.com/divysinghvi</a>
+LinkedIn: <a href="https://linkedin.com/in/divysinghvi" target="_blank" class="link">linkedin.com/in/divysinghvi</a>`;
+                },
+                
+                git: function() {
+                    return `Opening GitHub profile: <a href="https://github.com/divysinghvi" target="_blank" class="link">github.com/divysinghvi</a>`;
+                },
+                
+                resume: function() {
+                    return `You can download my resume at: <a href="#" class="link">divysinghvi.com/resume.pdf</a>`;
+                },
+                
+                clear: function() {
+                    terminalBody.innerHTML = '';
+                    return '';
+                },
+                
+                banner: function() {
+                    return `<pre class="ascii-art">${asciiArt}</pre>
+Welcome to Divy Singhvi's Terminal. Type <span style="color: var(--accent-color)">help</span> to see available commands.`;
+                },
+                
+                ls: function() {
+                    return `about.txt  projects.md  skills.json  contact.md  resume.pdf`;
+                },
+                
+                pwd: function() {
+                    return `/home/divy/portfolio`;
+                },
+                
+                whoami: function() {
+                    return `divy`;
+                },
+                
+                date: function() {
+                    return new Date().toString();
+                },
+                
+                echo: function(args) {
+                    return args.join(' ');
+                }
+            };
+            
+            // Process the command input
+            function processCommand(input) {
+                const inputTrimmed = input.trim();
+                if (!inputTrimmed) return '';
+                
+                // Add to command history
+                commandHistory.push(inputTrimmed);
+                historyIndex = commandHistory.length;
+                
+                // Parse command and arguments
+                const args = inputTrimmed.split(' ');
+                const command = args[0].toLowerCase();
+                const commandArgs = args.slice(1);
+                
+                // Execute command if it exists
+                if (command in commands) {
+                    if (typeof commands[command] === 'function') {
+                        if (commandArgs.length > 0 && command === 'echo') {
+                            return commands[command](commandArgs);
+                        } else {
+                            return commands[command]();
+                        }
+                    }
+                    return commands[command];
+                } else {
+                    return `Command not found: ${command}. Type 'help' for available commands.`;
+                }
+            }
+            
+            // Create a new line in the terminal
+            function createNewLine(withInput = true) {
+                const inputLine = document.createElement('div');
+                inputLine.className = 'input-line';
+                inputLine.innerHTML = `<span class="prompt">divy@macbook:</span><span class="path">~/portfolio$</span>&nbsp;`;
+                
+                if (withInput) {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.id = 'terminal-input';
+                    input.autocomplete = 'off';
+                    input.spellcheck = false;
+                    inputLine.appendChild(input);
+                    
+                    terminalBody.appendChild(inputLine);
+                    input.focus();
+                    
+                    // Transfer event listeners to the new input
+                    setupInputListeners(input);
+                }
+                
+                return inputLine;
+            }
+            
+            // Add command output to terminal
+            function addOutput(content, isCommand = false) {
+                const outputLine = document.createElement('div');
+                outputLine.className = 'output-line';
+                
+                if (isCommand) {
+                    outputLine.innerHTML = `<span class="prompt">divy@macbook:</span><span class="path">~/portfolio$</span> ${content}`;
+                } else {
+                    outputLine.innerHTML = content;
+                }
+                
+                terminalBody.appendChild(outputLine);
+                terminalBody.scrollTop = terminalBody.scrollHeight;
+            }
+            
+            // Setup event listeners for the input field
+            function setupInputListeners(input) {
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        const command = input.value;
+                        
+                        // Replace current input line with static text
+                        const currentInputLine = input.parentElement;
+                        currentInputLine.innerHTML = `<span class="prompt">divy@macbook:</span><span class="path">~/portfolio$</span> ${command}`;
+                        
+                        // Process the command and display output
+                        const output = processCommand(command);
+                        if (output) {
+                            addOutput(output);
+                        }
+                        
+                        // Create a new input line
+                        createNewLine();
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        if (historyIndex > 0) {
+                            historyIndex--;
+                            input.value = commandHistory[historyIndex];
+                        }
+                    } else if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        if (historyIndex < commandHistory.length - 1) {
+                            historyIndex++;
+                            input.value = commandHistory[historyIndex];
+                        } else {
+                            historyIndex = commandHistory.length;
+                            input.value = '';
+                        }
+                    } else if (e.key === 'Tab') {
+                        e.preventDefault();
+                        // Simple tab completion
+                        const partial = input.value.toLowerCase();
+                        if (partial) {
+                            const matches = Object.keys(commands).filter(cmd => cmd.startsWith(partial));
+                            if (matches.length === 1) {
+                                input.value = matches[0];
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Initialize terminal with banner and first prompt
+            function initializeTerminal() {
+                // Add banner first
+                addOutput(commands.banner());
+                
+                // Then add the first input line
+                createNewLine();
+            }
+            
+            // Auto-focus the input field when clicking on the terminal
+            terminalBody.addEventListener('click', function() {
+                const currentInput = document.getElementById('terminal-input');
+                if (currentInput) {
+                    currentInput.focus();
+                }
+            });
+            
+            // Initialize the terminal when page loads
+            initializeTerminal();
+        });
+    </script>
+</body>
+</html>
