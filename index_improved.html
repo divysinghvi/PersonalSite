@@ -236,6 +236,71 @@
             50% { opacity: 1; }
         }
         
+        .crack {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10000;
+            background: 
+                linear-gradient(90deg, transparent 48%, #ff0000 48%, #ff0000 52%, transparent 52%),
+                linear-gradient(45deg, transparent 48%, #ff0000 48%, #ff0000 52%, transparent 52%),
+                linear-gradient(-45deg, transparent 48%, #ff0000 48%, #ff0000 52%, transparent 52%),
+                linear-gradient(30deg, transparent 48%, #8b0000 48%, #8b0000 52%, transparent 52%),
+                linear-gradient(-30deg, transparent 48%, #8b0000 48%, #8b0000 52%, transparent 52%),
+                linear-gradient(60deg, transparent 48%, #ff4444 48%, #ff4444 52%, transparent 52%);
+            background-size: 100% 100%, 200% 200%, 200% 200%, 150% 150%, 150% 150%, 300% 300%;
+            background-position: center, 30% 40%, 70% 40%, 20% 60%, 80% 60%, 50% 50%;
+            opacity: 0;
+            animation: crackAppear 2s forwards;
+        }
+        
+        @keyframes crackAppear {
+            0% { opacity: 0; }
+            100% { opacity: 0.8; }
+        }
+        
+        @keyframes flickerLights {
+            0%, 100% { filter: brightness(1); }
+            10% { filter: brightness(0.3); }
+            15% { filter: brightness(1); }
+            25% { filter: brightness(0.2); }
+            30% { filter: brightness(1); }
+            45% { filter: brightness(0.4); }
+            50% { filter: brightness(1); }
+        }
+        
+        @keyframes flipPage {
+            0% { transform: rotate(0deg) scale(1); }
+            20% { transform: rotate(5deg) scale(1.02); }
+            40% { transform: rotate(-5deg) scale(1.02); }
+            60% { transform: rotate(5deg) scale(1.02); }
+            80% { transform: rotate(-5deg) scale(1.02); }
+            100% { transform: rotate(180deg) scale(1); }
+        }
+        
+        .upside-down {
+            animation: flipPage 3s ease-in-out forwards, flickerLights 3s ease-in-out;
+        }
+        
+        .stranger-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            color: #ff0000;
+            text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000, 0 0 30px #ff0000;
+            z-index: 10001;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            animation: fadeInOut 3s forwards;
+            pointer-events: none;
+            letter-spacing: 5px;
+        }
+        
         .typing-effect {
             overflow: hidden;
             white-space: nowrap;
@@ -460,7 +525,7 @@
   ls, pwd, whoami, date, echo
 
 <strong>Easter Eggs:</strong>
-  <span style="color: #ff69b4;">sudo, hack, matrix, coffee, rocket, dance</span> 😉`;
+  <span style="color: #ff69b4;">sudo, hack, matrix, coffee, rocket, upsidedown</span> 😉`;
                 },
                 
                 about: function() {
@@ -820,24 +885,57 @@ Stay caffeinated and keep coding! 💻</span>`);
                     return '';
                 },
                 
-                dance: function() {
+                upsidedown: function() {
                     const currentInput = document.getElementById('terminal-input');
                     if (currentInput) {
                         currentInput.disabled = true;
                     }
                     
-                    const dancers = ['🕺', '💃', '🕺', '💃'];
-                    let count = 0;
-                    const interval = setInterval(() => {
-                        const dancer = dancers[count % dancers.length];
-                        addOutput(`<span class="easter-egg" style="font-size: 24px;">${dancer.repeat(5)}</span>`);
-                        count++;
-                        if (count >= 8) {
-                            clearInterval(interval);
-                            addOutput('<span class="easter-egg">Party time! 🎉🎊🎈</span>');
-                            createNewLine();
+                    setTimeout(() => {
+                        // Create crack effect
+                        const crackDiv = document.createElement('div');
+                        crackDiv.className = 'crack';
+                        document.body.appendChild(crackDiv);
+                        
+                        // Create Stranger Things text
+                        const stText = document.createElement('div');
+                        stText.className = 'stranger-text';
+                        stText.textContent = 'WELCOME TO THE UPSIDE DOWN';
+                        document.body.appendChild(stText);
+                        
+                        // Add flicker and flip to body
+                        const container = document.querySelector('.container');
+                        if (container) {
+                            container.classList.add('upside-down');
                         }
-                    }, 200);
+                        
+                        // Terminal messages
+                        addOutput('<span style="color: #ff0000; text-shadow: 0 0 5px #ff0000;">⚠ DIMENSIONAL BREACH DETECTED ⚠</span>');
+                        
+                        setTimeout(() => {
+                            addOutput('<span style="color: #ff0000;">Reality is fragmenting...</span>');
+                        }, 1000);
+                        
+                        setTimeout(() => {
+                            addOutput('<span style="color: #8b0000;">The lights are flickering...</span>');
+                        }, 2000);
+                        
+                        setTimeout(() => {
+                            addOutput('<span style="color: #ff4444;">RUN.</span>');
+                        }, 3000);
+                        
+                        // Remove effects and create new line after 6 seconds
+                        setTimeout(() => {
+                            crackDiv.remove();
+                            stText.remove();
+                            if (container) {
+                                container.classList.remove('upside-down');
+                            }
+                            addOutput('<span class="easter-egg">You\'ve escaped the Upside Down... for now. 🎃</span>');
+                            createNewLine();
+                        }, 6000);
+                    }, 100);
+                    
                     return '';
                 },
                 
