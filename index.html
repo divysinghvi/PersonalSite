@@ -236,6 +236,71 @@
             50% { opacity: 1; }
         }
         
+        .crack {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10000;
+            background: 
+                linear-gradient(90deg, transparent 48%, #ff0000 48%, #ff0000 52%, transparent 52%),
+                linear-gradient(45deg, transparent 48%, #ff0000 48%, #ff0000 52%, transparent 52%),
+                linear-gradient(-45deg, transparent 48%, #ff0000 48%, #ff0000 52%, transparent 52%),
+                linear-gradient(30deg, transparent 48%, #8b0000 48%, #8b0000 52%, transparent 52%),
+                linear-gradient(-30deg, transparent 48%, #8b0000 48%, #8b0000 52%, transparent 52%),
+                linear-gradient(60deg, transparent 48%, #ff4444 48%, #ff4444 52%, transparent 52%);
+            background-size: 100% 100%, 200% 200%, 200% 200%, 150% 150%, 150% 150%, 300% 300%;
+            background-position: center, 30% 40%, 70% 40%, 20% 60%, 80% 60%, 50% 50%;
+            opacity: 0;
+            animation: crackAppear 2s forwards;
+        }
+        
+        @keyframes crackAppear {
+            0% { opacity: 0; }
+            100% { opacity: 0.8; }
+        }
+        
+        @keyframes flickerLights {
+            0%, 100% { filter: brightness(1); }
+            10% { filter: brightness(0.3); }
+            15% { filter: brightness(1); }
+            25% { filter: brightness(0.2); }
+            30% { filter: brightness(1); }
+            45% { filter: brightness(0.4); }
+            50% { filter: brightness(1); }
+        }
+        
+        @keyframes flipPage {
+            0% { transform: rotate(0deg) scale(1); }
+            20% { transform: rotate(5deg) scale(1.02); }
+            40% { transform: rotate(-5deg) scale(1.02); }
+            60% { transform: rotate(5deg) scale(1.02); }
+            80% { transform: rotate(-5deg) scale(1.02); }
+            100% { transform: rotate(180deg) scale(1); }
+        }
+        
+        .upside-down {
+            animation: flipPage 3s ease-in-out forwards, flickerLights 3s ease-in-out;
+        }
+        
+        .stranger-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            color: #ff0000;
+            text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000, 0 0 30px #ff0000;
+            z-index: 10001;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            animation: fadeInOut 3s forwards;
+            pointer-events: none;
+            letter-spacing: 5px;
+        }
+        
         .typing-effect {
             overflow: hidden;
             white-space: nowrap;
@@ -380,6 +445,7 @@
                 <div class="mobile-commands" id="mobile-commands">
                     <span class="command-button" onclick="executeQuickCommand('help')">help</span>
                     <span class="command-button" onclick="executeQuickCommand('about')">about</span>
+                    <span class="command-button" onclick="executeQuickCommand('experience')">experience</span>
                     <span class="command-button" onclick="executeQuickCommand('projects')">projects</span>
                     <span class="command-button" onclick="executeQuickCommand('skills')">skills</span>
                     <span class="command-button" onclick="executeQuickCommand('contact')">contact</span>
@@ -423,7 +489,8 @@
             // Command aliases
             const aliases = {
                 'bio': 'about',
-                'work': 'projects',
+                'exp': 'experience',
+                'work': 'experience',
                 'portfolio': 'projects',
                 'tech': 'skills',
                 'email': 'contact',
@@ -441,7 +508,8 @@
 
   <span class="help-command">help</span>              Show this help message
   <span class="help-command">about</span>             Learn about Divy <span style="color: #666;">(alias: bio)</span>
-  <span class="help-command">projects</span>          View my portfolio projects <span style="color: #666;">(alias: work, portfolio)</span>
+  <span class="help-command">experience</span>        View my work experience <span style="color: #666;">(alias: exp, work)</span>
+  <span class="help-command">projects</span>          View my portfolio projects <span style="color: #666;">(alias: portfolio)</span>
   <span class="help-command">skills</span>            List my technical skills <span style="color: #666;">(alias: tech)</span>
   <span class="help-command">contact</span>           Get my contact information <span style="color: #666;">(alias: email)</span>
   <span class="help-command">social</span>            Show my social media links
@@ -457,72 +525,151 @@
   ls, pwd, whoami, date, echo
 
 <strong>Easter Eggs:</strong>
-  <span style="color: #ff69b4;">sudo, hack, matrix, coffee, rocket, dance</span> 😉`;
+  <span style="color: #ff69b4;">sudo, hack, matrix, coffee, rocket, upsidedown</span> 😉`;
                 },
                 
                 about: function() {
                     return `Hi, I'm Divy Singhvi — a passionate full-stack developer and problem solver.
-With expertise in Flutter, Django, and modern web technologies, I specialize in building scalable, efficient, and user-focused digital experiences.
 
-I'm deeply familiar with deploying and managing applications using Docker and Kubernetes, and I enjoy leveraging cloud platforms to ensure scalability and reliability in every solution I build. Whether it's crafting intuitive mobile UIs or designing robust backend systems, I aim to bridge creativity with performance.
+Currently pursuing B.Tech in Electronics and Communication Engineering at College of Technology and Engineering, Udaipur (2023-2027). I specialize in building scalable, efficient, and user-focused digital experiences with expertise in Go, Python, Java, Flutter, and Django.
 
-Currently, I'm exploring new frameworks and cloud-native tools to tackle more complex, real-world challenges. I believe in building tech that not only works — but matters.`;
+I'm deeply familiar with deploying and managing applications using Docker and Kubernetes, and I enjoy leveraging cloud platforms to ensure scalability and reliability. As an active open-source contributor to Kubernetes (Minikube), I work on improving driver provisioning, CI automation, and container networking.
+
+I've worked as a Golang Developer Intern at Euro Technologies building an IAM platform MVP, and previously as a Software Engineering Intern at EF Polymer Ltd. (AgriTech startup valued at $70M+), where I developed a Sales & Warehouse Management System that reduced manual entries by 40%.
+
+I believe in building tech that not only works — but matters.`;
+                },
+                
+                experience: function() {
+                    return `<div class="project">
+<strong>Golang Developer Intern</strong> — Euro Technologies
+<span style="color: #666;">Aug 2025 - Nov 2025 | On-Site</span>
+• Worked on developing an IAM platform MVP
+• Developed backend using Go, Gin, Redis, enhancing authentication and scalability
+• Designed secure endpoints for full OIDC authentication flow and session lifecycle
+<div class="tags">
+    <span class="tag">Go</span>
+    <span class="tag">Gin</span>
+    <span class="tag">Redis</span>
+    <span class="tag">OIDC</span>
+    <span class="tag">IAM</span>
+</div>
+</div>
+
+<div class="project">
+<strong>Software Engineering Intern</strong> — EF Polymer Ltd.
+<span style="color: #666;">May 2024 - Jul 2025 | Hybrid (AgriTech startup valued at $70M+)</span>
+• Developed a Sales & Warehouse Management System tailored to agri supply chains
+• Implemented inventory tracking, analytics dashboards, and movement back-tracing
+• Achieved 40% reduction in manual entries and 20% fewer mis-products
+• Deployed system across multiple warehouses with successful production adoption
+<div class="tags">
+    <span class="tag">Zoho Creator</span>
+    <span class="tag">Deluge</span>
+    <span class="tag">Workflow Automation</span>
+    <span class="tag">Analytics</span>
+</div>
+</div>
+
+<div class="project">
+<strong>Open Source Contributor</strong> — Kubernetes (CNCF)
+<span style="color: #666;">Mar 2025 - Present | Remote</span>
+• Fixed bugs in driver provisioning, binary generation, and container networking (Minikube)
+• Enhanced GitHub Actions CI automation for image-testing reliability
+• Actively collaborating in PR reviews and RFC discussions
+<div class="tags">
+    <span class="tag">Kubernetes</span>
+    <span class="tag">Go</span>
+    <span class="tag">CI/CD</span>
+    <span class="tag">Open Source</span>
+</div>
+</div>`;
                 },
                 
                 projects: function() {
                     return `<div class="project">
 <strong>Self-Healing Microservice Infrastructure</strong>
-An intelligent infrastructure setup enabling self-diagnosing and self-recovering microservices. Integrated CI/CD pipelines with Argo CD, Prometheus-based monitoring, and automated rollback strategies ensure continuous availability.
+Built microservices with automatic failure detection and container restarts. Added Prometheus + Grafana metrics for structured performance monitoring and health checks.
 <div class="tags">
+    <span class="tag">Docker</span>
     <span class="tag">Kubernetes</span>
-    <span class="tag">Argo CD</span>
-    <span class="tag">CI/CD</span>
+    <span class="tag">Django</span>
     <span class="tag">Prometheus</span>
+    <span class="tag">Grafana</span>
 </div>
 </div>
 
 <div class="project">
-<strong>Warehouse Management System – EF Polymer</strong>
-Custom-built WMS with features like activity logging, back-tracing of products, automated alerts, and escalation mechanisms. Built using Zoho Creator, Deluge scripting, and integrated with external IoT/Qi systems for real-time tracking.
+<strong>Price Comparator Chrome Extension - Savely</strong>
+Browser extension comparing real-time prices across major e-commerce sites. Used web scraping with proxy & retry logic for reliable data fetching. 5,000+ active users on Chrome Web Store.
 <div class="tags">
-    <span class="tag">Zoho Creator</span>
-    <span class="tag">Deluge</span>
-    <span class="tag">Workflow Automation</span>
+    <span class="tag">Flask</span>
+    <span class="tag">FastAPI</span>
+    <span class="tag">Web Scraping</span>
+    <span class="tag">Svelte</span>
+    <span class="tag">Chrome Extension</span>
+</div>
+<a href="https://chromewebstore.google.com/detail/savely-price-comparison-f/nikhaokjeplnpmiacenkhmbfoeondkga" target="_blank" class="link">→ View on Chrome Web Store</a>
+</div>
+
+<div class="project">
+<strong>Notely: AI-Powered Note App</strong>
+Flutter-based note-taking app with AI features including OCR, Speech-to-Text, and Auto-Summarization. Implemented Firebase authentication & realtime sync for seamless cross-device experience.
+<div class="tags">
+    <span class="tag">Flutter</span>
+    <span class="tag">Firebase</span>
+    <span class="tag">Gemini API</span>
+    <span class="tag">OCR</span>
 </div>
 </div>
 
 <div class="project">
-<strong>Legal Summarization & Analysis Platform</strong>
-AI-powered platform offering legal document summarization and case analysis using a fine-tuned Mistral model hosted with Ollama. Built with Django and React for seamless user experience and robust backend support.
+<strong>Lawyer Document Summarizer</strong>
+LLM-based legal document summarizer with secure upload and retrieval flow. Uses fine-tuned Mistral model hosted with Ollama for intelligent document analysis.
 <div class="tags">
     <span class="tag">Django</span>
     <span class="tag">React</span>
-    <span class="tag">Mistral</span>
     <span class="tag">Ollama</span>
+    <span class="tag">Mistral</span>
 </div>
 </div>`;
                 },
                 
                 skills: function() {
-                    return `<strong>Technical Skills:</strong>
+                    return `<strong>Languages:</strong>
 <div class="tags">
-    <span class="tag">Kubernetes</span>
-    <span class="tag">Docker</span>
-    <span class="tag">CI/CD</span>
-    <span class="tag">Argo CD</span>
-    <span class="tag">YAML</span>
-    <span class="tag">Linux</span>
+    <span class="tag">Go</span>
+    <span class="tag">Python</span>
     <span class="tag">Java</span>
+    <span class="tag">Dart</span>
+    <span class="tag">JavaScript</span>
+    <span class="tag">SQL</span>
+</div>
+
+<strong>Frameworks & Tools:</strong>
+<div class="tags">
     <span class="tag">Django</span>
-    <span class="tag">React</span>
     <span class="tag">Flutter</span>
-    <span class="tag">Firebase</span>
-    <span class="tag">MongoDB</span>
+    <span class="tag">Docker</span>
+    <span class="tag">Kubernetes</span>
+    <span class="tag">Gin</span>
+    <span class="tag">Redis</span>
     <span class="tag">PostgreSQL</span>
-    <span class="tag">Git</span>
-    <span class="tag">API Integration</span>
-    <span class="tag">Zoho Creator</span>
-    <span class="tag">Deluge</span>
+</div>
+
+<strong>Platforms & Services:</strong>
+<div class="tags">
+    <span class="tag">Firebase</span>
+    <span class="tag">Prometheus</span>
+    <span class="tag">Grafana</span>
+    <span class="tag">GitHub Actions</span>
+    <span class="tag">Postman</span>
+</div>
+
+<strong>Other:</strong>
+<div class="tags">
+    <span class="tag">DSA</span>
+    <span class="tag">Open Source Collaboration</span>
 </div>`;
                 },
                 
@@ -535,8 +682,9 @@ Feel free to reach out for collaboration opportunities or just to say hello!`;
                 
                 social: function() {
                     return `GitHub: <a href="https://github.com/divysinghvi" target="_blank" class="link">github.com/divysinghvi</a>
-Twitter: <a href="https://x.com/sdiv172632" target="_blank" class="link">twitter.com/divysinghvi</a>
-LinkedIn: <a href="https://linkedin.com/in/divysinghvi" target="_blank" class="link">linkedin.com/in/divysinghvi</a>`;
+LinkedIn: <a href="https://linkedin.com/in/divysinghvi" target="_blank" class="link">linkedin.com/in/divysinghvi</a>
+Portfolio: <a href="https://divysinghvi.vercel.app/" target="_blank" class="link">divysinghvi.vercel.app</a>
+Twitter: <a href="https://x.com/sdiv172632" target="_blank" class="link">twitter.com/sdiv172632</a>`;
                 },
                 
                 git: function() {
@@ -550,16 +698,21 @@ LinkedIn: <a href="https://linkedin.com/in/divysinghvi" target="_blank" class="l
                 },
                 
                 resume: function() {
-                    return `<span class="warning">⚠ Resume link coming soon!</span>
-In the meantime, check out my <a href="https://linkedin.com/in/divysinghvi" target="_blank" class="link">LinkedIn profile</a> or <a href="https://github.com/divysinghvi" target="_blank" class="link">GitHub</a>.`;
+                    window.open("resume.pdf", "_blank");
+                    return '<span class="success">✓ Opening resume in new tab...</span>';
                 },
                 
                 now: function() {
                     return `<strong>Currently Working On:</strong>
-• Exploring cloud-native architectures and service mesh implementations
-• Building intelligent automation tools for DevOps workflows
-• Deep-diving into eBPF and kernel-level observability
-• Contributing to open-source Kubernetes projects
+• Contributing to Kubernetes (Minikube) - fixing bugs in driver provisioning, binary generation, and container networking
+• Enhancing GitHub Actions CI automation for image-testing reliability
+• Actively participating in PR reviews and RFC discussions in CNCF community
+• Exploring advanced Go patterns and microservices architecture
+• Building projects with IAM, OIDC authentication flows, and distributed systems
+
+<strong>Recent Achievements:</strong>
+• WorldQuant IQC Stage 1 – 2nd Prize ($1,000): Ranked 98 globally in quantitative finance competition
+• 5,000+ active users on Savely Chrome Extension
 
 <span style="color: #666;">Last updated: November 2025</span>`;
                 },
@@ -732,24 +885,57 @@ Stay caffeinated and keep coding! 💻</span>`);
                     return '';
                 },
                 
-                dance: function() {
+                upsidedown: function() {
                     const currentInput = document.getElementById('terminal-input');
                     if (currentInput) {
                         currentInput.disabled = true;
                     }
                     
-                    const dancers = ['🕺', '💃', '🕺', '💃'];
-                    let count = 0;
-                    const interval = setInterval(() => {
-                        const dancer = dancers[count % dancers.length];
-                        addOutput(`<span class="easter-egg" style="font-size: 24px;">${dancer.repeat(5)}</span>`);
-                        count++;
-                        if (count >= 8) {
-                            clearInterval(interval);
-                            addOutput('<span class="easter-egg">Party time! 🎉🎊🎈</span>');
-                            createNewLine();
+                    setTimeout(() => {
+                        // Create crack effect
+                        const crackDiv = document.createElement('div');
+                        crackDiv.className = 'crack';
+                        document.body.appendChild(crackDiv);
+                        
+                        // Create Stranger Things text
+                        const stText = document.createElement('div');
+                        stText.className = 'stranger-text';
+                        stText.textContent = 'WELCOME TO THE UPSIDE DOWN';
+                        document.body.appendChild(stText);
+                        
+                        // Add flicker and flip to body
+                        const container = document.querySelector('.container');
+                        if (container) {
+                            container.classList.add('upside-down');
                         }
-                    }, 200);
+                        
+                        // Terminal messages
+                        addOutput('<span style="color: #ff0000; text-shadow: 0 0 5px #ff0000;">⚠ DIMENSIONAL BREACH DETECTED ⚠</span>');
+                        
+                        setTimeout(() => {
+                            addOutput('<span style="color: #ff0000;">Reality is fragmenting...</span>');
+                        }, 1000);
+                        
+                        setTimeout(() => {
+                            addOutput('<span style="color: #8b0000;">The lights are flickering...</span>');
+                        }, 2000);
+                        
+                        setTimeout(() => {
+                            addOutput('<span style="color: #ff4444;">RUN.</span>');
+                        }, 3000);
+                        
+                        // Remove effects and create new line after 6 seconds
+                        setTimeout(() => {
+                            crackDiv.remove();
+                            stText.remove();
+                            if (container) {
+                                container.classList.remove('upside-down');
+                            }
+                            addOutput('<span class="easter-egg">You\'ve escaped the Upside Down... for now. 🎃</span>');
+                            createNewLine();
+                        }, 6000);
+                    }, 100);
+                    
                     return '';
                 },
                 
