@@ -1,43 +1,114 @@
-# Svelte + Vite
+# Divy Singhvi - Personal Site
 
-This template should help get you started developing with Svelte in Vite.
+A modern personal portfolio website built with Svelte and Vite, featuring a unique dual-mode interface that caters to both technical and non-technical audiences.
 
-## Recommended IDE Setup
+## 🌟 Features
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+### Dual-Mode Interface
+- **Developer Mode**: Interactive terminal-based interface with command-line navigation
+- **Simple Mode**: Clean, minimalistic landing page for general audience
+- Smooth toggle between modes with preference persistence
 
-## Need an official Svelte framework?
+### Developer Mode
+- Full terminal emulation with command history
+- Interactive commands: `help`, `about`, `experience`, `projects`, `skills`, `contact`, `social`, and more
+- Easter eggs: `sudo`, `hack`, `matrix`, `coffee`, `rocket`
+- Tab completion and keyboard navigation
+- Mobile-optimized with quick command buttons
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+### Simple Mode
+- Professional, clean design
+- Smooth section navigation
+- Responsive layout
+- Clear presentation of experience, projects, and contact information
 
-## Technical considerations
+## 🚀 Getting Started
 
-**Why use this over SvelteKit?**
+### Prerequisites
+- Node.js 18+ installed
+- npm or yarn package manager
 
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
+### Installation
 
-This template contains as little as possible to get started with Vite + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
+```bash
+# Clone the repository
+git clone https://github.com/divysinghvi/PersonalSite.git
+cd PersonalSite
 
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
+# Install dependencies
+npm install
 
-**Why include `.vscode/extensions.json`?**
+# Start development server
+npm run dev
 
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
+# Build for production
+npm run build
 
-**Why enable `checkJs` in the JS template?**
-
-It is likely that most cases of changing variable types in runtime are likely to be accidental, rather than deliberate. This provides advanced typechecking out of the box. Should you like to take advantage of the dynamically-typed nature of JavaScript, it is trivial to change the configuration.
-
-**Why is HMR not preserving my local component state?**
-
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/sveltejs/svelte-hmr/tree/master/packages/svelte-hmr#preservation-of-local-state).
-
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
-
-```js
-// store.js
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
+# Preview production build
+npm run preview
 ```
+
+## 📱 Mobile Optimization
+
+Both modes are fully responsive and optimized for mobile devices:
+- Terminal mode includes quick command buttons for easy mobile navigation
+- Optimized font sizes and spacing for small screens
+- Smooth scrolling and touch interactions
+
+## 🛠️ Tech Stack
+
+- **Framework**: Svelte 5
+- **Build Tool**: Vite 7
+- **Styling**: Component-scoped CSS
+- **State Management**: Svelte stores + localStorage
+
+## 📂 Project Structure
+
+```
+PersonalSite/
+├── src/
+│   ├── lib/
+│   │   ├── ModeToggle.svelte    # Toggle between dev/simple modes
+│   │   ├── Terminal.svelte       # Developer mode terminal
+│   │   └── NonDevView.svelte     # Simple mode landing page
+│   ├── App.svelte                # Main app component
+│   ├── app.css                   # Global styles
+│   └── main.js                   # Entry point
+├── public/                       # Static assets
+├── index.html                    # HTML template
+└── package.json                  # Dependencies and scripts
+```
+
+## 🎨 Customization
+
+### Updating Content
+- Terminal commands are defined in `src/lib/Terminal.svelte`
+- Simple mode content is in `src/lib/NonDevView.svelte`
+- Colors and styling can be customized in the respective component styles
+
+### Adding New Commands
+Add new commands in the `commands` object in `Terminal.svelte`:
+
+```javascript
+const commands = {
+  mycommand: () => `Your command output here`,
+  // ... other commands
+};
+```
+
+## 📝 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+## 👤 Author
+
+**Divy Singhvi**
+- GitHub: [@divysinghvi](https://github.com/divysinghvi)
+- LinkedIn: [divysinghvi](https://linkedin.com/in/divysinghvi)
+- Email: divysinghvi5@gmail.com
+
+## 🙏 Acknowledgments
+
+- Built with [Svelte](https://svelte.dev/)
+- Powered by [Vite](https://vitejs.dev/)
+
