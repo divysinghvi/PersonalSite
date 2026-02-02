@@ -1,9 +1,12 @@
-<script>
-  import { onMount } from 'svelte';
-  
-  let terminalBody;
-  let commandHistory = [];
-  let historyIndex = 0;
+import React, { useState, useEffect, useRef } from 'react';
+import './Terminal.css';
+
+const Terminal = () => {
+  const terminalBodyRef = useRef(null);
+  const [commandHistory, setCommandHistory] = useState([]);
+  const [historyIndex, setHistoryIndex] = useState(0);
+  const commandHistoryRef = useRef([]);
+  const historyIndexRef = useRef(0);
   
   const asciiArt = `
  _____   _                   
@@ -230,18 +233,18 @@ Twitter: <a href="https://x.com/sdiv172632" target="_blank" class="link">twitter
 <span style="color: #666;">Last updated: November 2025</span>`,
     
     history: () => {
-      if (commandHistory.length === 0) {
+      if (commandHistoryRef.current.length === 0) {
         return 'No commands in history yet.';
       }
-      return commandHistory.map((cmd, idx) => `${idx + 1}  ${cmd}`).join('\n');
+      return commandHistoryRef.current.map((cmd, idx) => `${idx + 1}  ${cmd}`).join('\n');
     },
     
     clear: () => {
-      if (terminalBody) {
-        const mobileCommands = terminalBody.querySelector('#mobile-commands');
-        terminalBody.innerHTML = '';
+      if (terminalBodyRef.current) {
+        const mobileCommands = terminalBodyRef.current.querySelector('#mobile-commands');
+        terminalBodyRef.current.innerHTML = '';
         if (mobileCommands) {
-          terminalBody.appendChild(mobileCommands);
+          terminalBodyRef.current.appendChild(mobileCommands);
         }
       }
       return '';
@@ -274,13 +277,19 @@ Stay caffeinated and keep coding! 💻</span>`,
     rocket: () => '<span class="easter-egg">🚀 Launching... To infinity and beyond! 🌌</span>'
   };
   
-  function processCommand(input) {
+  const processCommand = (input) => {
     const inputTrimmed = input.trim();
     if (!inputTrimmed) return '';
     
-    commandHistory.push(inputTrimmed);
-    historyIndex = commandHistory.length;
-    localStorage.setItem('terminalHistory', JSON.stringify(commandHistory.slice(-50)));
+    let newHistory;
+    setCommandHistory(prev => {
+      const updated = [...prev, inputTrimmed];
+      const sliced = updated.slice(-50);
+      newHistory = sliced;
+      localStorage.setItem('terminalHistory', JSON.stringify(sliced));
+      return sliced;
+    });
+    setHistoryIndex(newHistory ? newHistory.length : commandHistory.length + 1);
     
     const args = inputTrimmed.split(' ');
     let command = args[0].toLowerCase();
@@ -304,9 +313,9 @@ Stay caffeinated and keep coding! 💻</span>`,
       response += `\n\nType 'help' for available commands.`;
       return response;
     }
-  }
+  };
   
-  function createNewLine(withInput = true) {
+  const createNewLine = (withInput = true) => {
     const inputLine = document.createElement('div');
     inputLine.className = 'input-line';
     inputLine.innerHTML = `<span class="prompt">divysinghvi@Divys-MacBook-Air</span><span class="path">personal-site %</span>&nbsp;`;
@@ -319,16 +328,16 @@ Stay caffeinated and keep coding! 💻</span>`,
       input.spellcheck = false;
       inputLine.appendChild(input);
       
-      terminalBody.appendChild(inputLine);
+      terminalBodyRef.current.appendChild(inputLine);
       input.focus();
       
       setupInputListeners(input);
     }
     
     return inputLine;
-  }
+  };
   
-  function addOutput(content, isCommand = false) {
+  const addOutput = (content, isCommand = false) => {
     const outputLine = document.createElement('div');
     outputLine.className = 'output-line';
     
@@ -338,11 +347,11 @@ Stay caffeinated and keep coding! 💻</span>`,
       outputLine.innerHTML = content;
     }
     
-    terminalBody.appendChild(outputLine);
-    terminalBody.scrollTop = terminalBody.scrollHeight;
-  }
+    terminalBodyRef.current.appendChild(outputLine);
+    terminalBodyRef.current.scrollTop = terminalBodyRef.current.scrollHeight;
+  };
   
-  function setupInputListeners(input) {
+  const setupInputListeners = (input) => {
     input.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -363,18 +372,21 @@ Stay caffeinated and keep coding! 💻</span>`,
         createNewLine();
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
-        if (historyIndex > 0) {
-          historyIndex--;
-          input.value = commandHistory[historyIndex];
+        if (historyIndexRef.current > 0) {
+          historyIndexRef.current--;
+          input.value = commandHistoryRef.current[historyIndexRef.current];
+          setHistoryIndex(historyIndexRef.current);
         }
       } else if (e.key === 'ArrowDown') {
         e.preventDefault();
-        if (historyIndex < commandHistory.length - 1) {
-          historyIndex++;
-          input.value = commandHistory[historyIndex];
+        if (historyIndexRef.current < commandHistoryRef.current.length - 1) {
+          historyIndexRef.current++;
+          input.value = commandHistoryRef.current[historyIndexRef.current];
+          setHistoryIndex(historyIndexRef.current);
         } else {
-          historyIndex = commandHistory.length;
+          historyIndexRef.current = commandHistoryRef.current.length;
           input.value = '';
+          setHistoryIndex(historyIndexRef.current);
         }
       } else if (e.key === 'Tab') {
         e.preventDefault();
@@ -388,9 +400,9 @@ Stay caffeinated and keep coding! 💻</span>`,
         }
       }
     });
-  }
+  };
   
-  function initializeTerminal() {
+  const initializeTerminal = () => {
     addOutput(commands.banner());
     
     if (!localStorage.getItem('visitedBefore')) {
@@ -401,275 +413,77 @@ Stay caffeinated and keep coding! 💻</span>`,
     }
     
     createNewLine();
-  }
+  };
   
-  function executeQuickCommand(cmd) {
+  const executeQuickCommand = (cmd) => {
     const input = document.getElementById('terminal-input');
     if (input) {
       input.value = cmd;
       const event = new KeyboardEvent('keydown', { key: 'Enter' });
       input.dispatchEvent(event);
     }
-  }
+  };
   
-  onMount(() => {
+  useEffect(() => {
+    commandHistoryRef.current = commandHistory;
+  }, [commandHistory]);
+
+  useEffect(() => {
+    historyIndexRef.current = historyIndex;
+  }, [historyIndex]);
+
+  useEffect(() => {
     const savedHistory = localStorage.getItem('terminalHistory');
     if (savedHistory) {
-      commandHistory = JSON.parse(savedHistory);
-      historyIndex = commandHistory.length;
+      const parsed = JSON.parse(savedHistory);
+      setCommandHistory(parsed);
+      setHistoryIndex(parsed.length);
     }
     
     initializeTerminal();
     
-    terminalBody.addEventListener('click', function() {
+    const handleClick = () => {
       const currentInput = document.getElementById('terminal-input');
       if (currentInput) {
         currentInput.focus();
       }
-    });
-  });
-</script>
-
-<div class="terminal">
-  <div class="terminal-header">
-    <div class="terminal-buttons">
-      <div class="terminal-button close-button"></div>
-      <div class="terminal-button minimize-button"></div>
-      <div class="terminal-button maximize-button"></div>
+    };
+    
+    const terminalBody = terminalBodyRef.current;
+    if (terminalBody) {
+      terminalBody.addEventListener('click', handleClick);
+    }
+    
+    return () => {
+      if (terminalBody) {
+        terminalBody.removeEventListener('click', handleClick);
+      }
+    };
+  }, []);
+  
+  return (
+    <div className="terminal">
+      <div className="terminal-header">
+        <div className="terminal-buttons">
+          <div className="terminal-button close-button"></div>
+          <div className="terminal-button minimize-button"></div>
+          <div className="terminal-button maximize-button"></div>
+        </div>
+        <div className="terminal-title">divysinghvi@Divys-MacBook-Air: personal-site</div>
+      </div>
+      <div className="terminal-body" ref={terminalBodyRef}>
+        <div className="mobile-commands" id="mobile-commands">
+          <button className="command-button" onClick={() => executeQuickCommand('help')}>help</button>
+          <button className="command-button" onClick={() => executeQuickCommand('about')}>about</button>
+          <button className="command-button" onClick={() => executeQuickCommand('experience')}>experience</button>
+          <button className="command-button" onClick={() => executeQuickCommand('projects')}>projects</button>
+          <button className="command-button" onClick={() => executeQuickCommand('skills')}>skills</button>
+          <button className="command-button" onClick={() => executeQuickCommand('contact')}>contact</button>
+          <button className="command-button" onClick={() => executeQuickCommand('social')}>social</button>
+        </div>
+      </div>
     </div>
-    <div class="terminal-title">divysinghvi@Divys-MacBook-Air: personal-site</div>
-  </div>
-  <div class="terminal-body" bind:this={terminalBody}>
-    <div class="mobile-commands" id="mobile-commands">
-      <button class="command-button" on:click={() => executeQuickCommand('help')}>help</button>
-      <button class="command-button" on:click={() => executeQuickCommand('about')}>about</button>
-      <button class="command-button" on:click={() => executeQuickCommand('experience')}>experience</button>
-      <button class="command-button" on:click={() => executeQuickCommand('projects')}>projects</button>
-      <button class="command-button" on:click={() => executeQuickCommand('skills')}>skills</button>
-      <button class="command-button" on:click={() => executeQuickCommand('contact')}>contact</button>
-      <button class="command-button" on:click={() => executeQuickCommand('social')}>social</button>
-    </div>
-  </div>
-</div>
+  );
+};
 
-<style>
-  :global(:root) {
-    --background: #1e1e1e;
-    --terminal-bg: #2d2d2d;
-    --text-color: #f8f8f8;
-    --prompt-color: #57c754;
-    --accent-color: #57c754;
-    --path-color: #57c7c4;
-    --link-color: #57c754;
-    --link-hover: #7de87a;
-  }
-  
-  .terminal {
-    background-color: var(--terminal-bg);
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    overflow: hidden;
-    width: 100%;
-    max-width: 900px;
-    margin: 0 auto;
-  }
-  
-  .terminal-header {
-    background: linear-gradient(to bottom, #e4e4e4, #c8c8c8);
-    height: 28px;
-    display: flex;
-    align-items: center;
-    padding: 0 10px;
-    position: relative;
-  }
-  
-  .terminal-buttons {
-    display: flex;
-    gap: 6px;
-  }
-  
-  .terminal-button {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-  }
-  
-  .close-button {
-    background-color: #ff5f56;
-    border: 1px solid #e0443e;
-  }
-  
-  .minimize-button {
-    background-color: #ffbd2e;
-    border: 1px solid #dea123;
-  }
-  
-  .maximize-button {
-    background-color: #27c93f;
-    border: 1px solid #1aab29;
-  }
-  
-  .terminal-title {
-    position: absolute;
-    left: 0;
-    right: 0;
-    text-align: center;
-    font-size: 13px;
-    color: #4d4d4d;
-    pointer-events: none;
-  }
-  
-  .terminal-body {
-    padding: 15px;
-    font-size: 14px;
-    height: 70vh;
-    max-height: 600px;
-    overflow-y: auto;
-    white-space: pre-wrap;
-    scroll-behavior: smooth;
-  }
-  
-  :global(.prompt) {
-    color: var(--prompt-color);
-    margin-right: 5px;
-    white-space: nowrap;
-  }
-  
-  :global(.path) {
-    color: var(--path-color);
-    margin-right: 5px;
-    white-space: nowrap;
-  }
-  
-  :global(.output-line) {
-    margin-bottom: 10px;
-    line-height: 1.5;
-    word-wrap: break-word;
-  }
-  
-  :global(.link) {
-    color: var(--link-color);
-    text-decoration: none;
-    border-bottom: 1px dotted var(--link-color);
-    transition: color 0.3s ease;
-  }
-  
-  :global(.link:hover) {
-    color: var(--link-hover);
-  }
-  
-  :global(#terminal-input) {
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--text-color);
-    font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
-    font-size: 14px;
-    flex: 1;
-    caret-color: var(--text-color);
-    width: 100%;
-  }
-  
-  :global(.input-line) {
-    display: flex;
-    margin-bottom: 10px;
-  }
-  
-  :global(.ascii-art) {
-    color: var(--prompt-color);
-    line-height: 1.2;
-    margin-bottom: 15px;
-  }
-  
-  :global(.tags) {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 5px;
-  }
-  
-  :global(.tag) {
-    background-color: rgba(87, 199, 84, 0.2);
-    color: var(--accent-color);
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-  }
-  
-  :global(.project) {
-    margin-bottom: 15px;
-    border-left: 2px solid var(--accent-color);
-    padding-left: 10px;
-  }
-  
-  :global(.help-command) {
-    color: var(--accent-color);
-    font-weight: bold;
-  }
-  
-  :global(.command-description) {
-    color: #a0a0a0;
-    padding-left: 20px;
-    margin-bottom: 8px;
-  }
-  
-  .command-button {
-    display: inline-block;
-    background-color: rgba(87, 199, 84, 0.15);
-    color: var(--accent-color);
-    padding: 6px 12px;
-    margin: 4px;
-    border-radius: 4px;
-    cursor: pointer;
-    border: 1px solid rgba(87, 199, 84, 0.3);
-    font-size: 12px;
-    transition: all 0.2s ease;
-  }
-  
-  .command-button:hover {
-    background-color: rgba(87, 199, 84, 0.3);
-    border-color: var(--accent-color);
-  }
-  
-  .mobile-commands {
-    display: none;
-    padding: 10px;
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 6px;
-    margin-bottom: 10px;
-    flex-wrap: wrap;
-  }
-  
-  :global(.easter-egg) {
-    color: #ff69b4;
-  }
-  
-  :global(.success) {
-    color: var(--accent-color);
-  }
-  
-  @media (max-width: 600px) {
-    .terminal-body {
-      padding: 12px;
-      font-size: 12px;
-      height: calc(100vh - 200px);
-      max-height: none;
-    }
-    
-    .mobile-commands {
-      display: flex;
-    }
-    
-    :global(.ascii-art) {
-      font-size: 8px;
-    }
-    
-    :global(#terminal-input) {
-      font-size: 12px;
-    }
-    
-    .terminal-title {
-      font-size: 11px;
-    }
-  }
-</style>
+export default Terminal;
