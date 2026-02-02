@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import ModeToggle from './components/ModeToggle'
-import Terminal from './components/Terminal'
-import NonDevView from './components/NonDevView'
+import ModeToggle from './components/ModeToggle.jsx'
+import Terminal from './components/Terminal.jsx'
+import NonDevView from './components/NonDevView.jsx'
 
 function App() {
   const [isDev, setIsDev] = useState(true)
