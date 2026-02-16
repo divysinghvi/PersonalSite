@@ -161,16 +161,13 @@
   .non-dev-container {
     max-width: 900px;
     margin: 0 auto;
-    padding: 80px 20px 20px;
+    padding: 20px;
     color: #f8f8f8;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   }
   
   .navigation {
-    position: fixed;
-    top: 70px;
-    left: 0;
-    right: 0;
+    position: static;
     background: rgba(30, 30, 30, 0.95);
     backdrop-filter: blur(10px);
     padding: 15px 20px;
@@ -179,6 +176,8 @@
     gap: 30px;
     z-index: 100;
     border-bottom: 1px solid rgba(87, 199, 84, 0.2);
+    border-radius: 10px;
+    margin-bottom: 20px;
   }
   
   .navigation a {
@@ -421,11 +420,10 @@
   
   @media (max-width: 600px) {
     .non-dev-container {
-      padding: 140px 15px 20px;
+      padding: 15px;
     }
     
     .navigation {
-      top: 60px;
       gap: 15px;
       padding: 12px 15px;
       overflow-x: auto;
