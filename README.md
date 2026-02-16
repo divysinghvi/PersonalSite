@@ -1,12 +1,12 @@
 # Divy Singhvi - Personal Site
 
-A modern personal portfolio website built with React and Vite, featuring a unique dual-mode interface that caters to both technical and non-technical audiences.
+A modern personal portfolio website built with Svelte and Vite, featuring a unique dual-mode interface that caters to both technical and non-technical audiences.
 
 ## 🌟 Features
 
 ### Dual-Mode Interface
 - **Developer Mode**: Interactive terminal-based interface with command-line navigation
-- **Simple Mode**: Clean, modern portfolio design inspired by Magic UI
+- **Simple Mode**: Clean, minimalistic landing page for general audience
 - Smooth toggle between modes with preference persistence
 
 ### Developer Mode
@@ -17,11 +17,10 @@ A modern personal portfolio website built with React and Vite, featuring a uniqu
 - Mobile-optimized with quick command buttons
 
 ### Simple Mode
-- Professional, modern portfolio design inspired by Magic UI
-- Smooth animations with Framer Motion
-- Responsive layout with gradient accents
+- Professional, clean design
+- Smooth section navigation
+- Responsive layout
 - Clear presentation of experience, projects, and contact information
-- Mobile-first responsive design
 
 ## 🚀 Getting Started
 
@@ -53,31 +52,28 @@ npm run preview
 
 Both modes are fully responsive and optimized for mobile devices:
 - Terminal mode includes quick command buttons for easy mobile navigation
-- Simple mode features mobile-first responsive design
 - Optimized font sizes and spacing for small screens
 - Smooth scrolling and touch interactions
 
 ## 🛠️ Tech Stack
 
-- **Framework**: React 18
+- **Framework**: Svelte 5
 - **Build Tool**: Vite 7
-- **Animations**: Framer Motion
-- **Icons**: Lucide React
 - **Styling**: Component-scoped CSS
-- **State Management**: React hooks + localStorage
+- **State Management**: Svelte stores + localStorage
 
 ## 📂 Project Structure
 
 ```
 PersonalSite/
 ├── src/
-│   ├── components/
-│   │   ├── ModeToggle.jsx       # Toggle between dev/simple modes
-│   │   ├── Terminal.jsx          # Developer mode terminal
-│   │   └── NonDevView.jsx        # Simple mode portfolio
-│   ├── App.jsx                   # Main app component
+│   ├── lib/
+│   │   ├── ModeToggle.svelte    # Toggle between dev/simple modes
+│   │   ├── Terminal.svelte       # Developer mode terminal
+│   │   └── NonDevView.svelte     # Simple mode landing page
+│   ├── App.svelte                # Main app component
 │   ├── app.css                   # Global styles
-│   └── main.jsx                  # Entry point
+│   └── main.js                   # Entry point
 ├── public/                       # Static assets
 ├── index.html                    # HTML template
 └── package.json                  # Dependencies and scripts
@@ -86,12 +82,12 @@ PersonalSite/
 ## 🎨 Customization
 
 ### Updating Content
-- Terminal commands are defined in `src/components/Terminal.jsx`
-- Simple mode content is in `src/components/NonDevView.jsx`
-- Colors and styling can be customized in the respective component CSS files
+- Terminal commands are defined in `src/lib/Terminal.svelte`
+- Simple mode content is in `src/lib/NonDevView.svelte`
+- Colors and styling can be customized in the respective component styles
 
 ### Adding New Commands
-Add new commands in the `commands` object in `Terminal.jsx`:
+Add new commands in the `commands` object in `Terminal.svelte`:
 
 ```javascript
 const commands = {
@@ -113,8 +109,6 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## 🙏 Acknowledgments
 
-- Built with [React](https://react.dev/)
+- Built with [Svelte](https://svelte.dev/)
 - Powered by [Vite](https://vitejs.dev/)
-- Animated with [Framer Motion](https://www.framer.com/motion/)
-- Design inspired by [Magic UI](https://magicui.design/)
 
